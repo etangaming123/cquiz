@@ -54,6 +54,15 @@ def _reveal_line(line: str) -> None:
     _pause()
 
 
+def print_line(text: str, animate: bool = False) -> None:
+    """Print one already-formatted line (e.g. a results table row), optionally
+    revealed with a pause before whatever prints next."""
+    if animate:
+        _reveal_line(text)
+    else:
+        print(text)
+
+
 def print_wrapped(
     text: str,
     width: int,

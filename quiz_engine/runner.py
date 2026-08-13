@@ -6,7 +6,7 @@ import random
 from .models import Character, Choice, Quiz
 from .prompts import safe_input
 from .settings import load_settings
-from .text_utils import print_wrapped, terminal_width
+from .text_utils import print_line, print_wrapped, terminal_width
 
 TOP_RESULTS_SHOWN = 10
 
@@ -61,14 +61,16 @@ def score_quiz(quiz: Quiz, user_vector: dict[str, int]) -> list[tuple[Character,
     return results
 
 
-def print_results(results: list[tuple[Character, float]], width: int, word_wrap: bool = True) -> None:
+def print_results(
+    results: list[tuple[Character, float]], width: int, word_wrap: bool = True, typewriter: bool = False
+) -> None:
     print("\n" + "=" * 50)
     print("RESULTS — how closely you match each character")
     print("=" * 50)
     shown = results[:TOP_RESULTS_SHOWN]
     for char, pct in shown:
         bar = "#" * round(pct / 5)
-        print(f"{char.name:<20} {pct:5.1f}%  {bar}")
+        print_line(f"{char.name:<20} {pct:5.1f}%  {bar}", animate=typewriter)
 
     remaining = len(results) - len(shown)
     if remaining > 0:
@@ -80,9 +82,11 @@ def print_results(results: list[tuple[Character, float]], width: int, word_wrap:
 
     top_char, top_pct = results[0]
     print("\n" + "-" * 50)
-    print_wrapped(f"You are closest to: {top_char.name} ({top_pct:.1f}% match)", width, wrap=word_wrap)
+    print_wrapped(
+        f"You are closest to: {top_char.name} ({top_pct:.1f}% match)", width, wrap=word_wrap, typewriter=typewriter
+    )
     if top_char.description:
-        print_wrapped(top_char.description, width, wrap=word_wrap)
+        print_wrapped(top_char.description, width, wrap=word_wrap, typewriter=typewriter)
 
     runners_up = [
         (char, pct) for char, pct in results[1:]
@@ -135,4 +139,4 @@ def run_quiz(quiz: Quiz) -> None:
                 print(f"  Currently closest to: {leader.name} ({leader_pct:.1f}%)")
 
     results = score_quiz(quiz, user_vector)
-    print_results(results, width, word_wrap=settings.word_wrap)
+    print_results(results, width, word_wrap=settings.word_wrap, typewriter=settings.typewriter_animation)
