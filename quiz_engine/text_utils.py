@@ -54,6 +54,12 @@ def _reveal_line(line: str) -> None:
     _pause()
 
 
+def pause(animate: bool = True) -> None:
+    """Hold for a beat with nothing printed, e.g. right after a section header."""
+    if animate:
+        _pause()
+
+
 def print_line(text: str, animate: bool = False) -> None:
     """Print one already-formatted line (e.g. a results table row), optionally
     revealed with a pause before whatever prints next."""

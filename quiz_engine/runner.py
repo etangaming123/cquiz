@@ -6,7 +6,7 @@ import random
 from .models import Character, Choice, Quiz
 from .prompts import safe_input
 from .settings import load_settings
-from .text_utils import print_line, print_wrapped, terminal_width
+from .text_utils import pause, print_line, print_wrapped, terminal_width
 
 TOP_RESULTS_SHOWN = 10
 
@@ -67,6 +67,7 @@ def print_results(
     print("\n" + "=" * 50)
     print("RESULTS — how closely you match each character")
     print("=" * 50)
+    pause(typewriter)
     shown = results[:TOP_RESULTS_SHOWN]
     for char, pct in shown:
         bar = "#" * round(pct / 5)
