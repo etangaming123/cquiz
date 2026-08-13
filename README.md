@@ -39,7 +39,7 @@ Choose **3. Settings** from the main menu to toggle:
 - **Shuffle answer choice order** — randomize each question's choice order each time.
 - **Show points added to each attribute after answering** — after each answer, show the attribute points that choice just added (e.g. `(+3 bravery, +1 ambition)`).
 - **Show current closest character after each question** — after each answer, print your current leading character and its running match %.
-- **Typewriter animation for quiz question text** — the quiz title, description, and each question are "animated" with a typewriter for the title, description, and question, and shown line by line for all the answers.
+- **Typewriter animation for quiz question text** — text is "animated" with a typewriter for the question, and shown line by line for all the answers.
 
 Toggling a setting saves immediately to `settings.json` in the project root.
 

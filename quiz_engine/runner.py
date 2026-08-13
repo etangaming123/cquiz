@@ -98,9 +98,11 @@ def run_quiz(quiz: Quiz) -> None:
     width = terminal_width()
 
     print()
-    print_wrapped(quiz.title, width, wrap=settings.word_wrap, typewriter=settings.typewriter_animation)
+    print_wrapped(quiz.title, width, wrap=settings.word_wrap)
     if quiz.description:
-        print_wrapped(quiz.description, width, wrap=settings.word_wrap, typewriter=settings.typewriter_animation)
+        print_wrapped(quiz.description, width, wrap=settings.word_wrap)
+    if settings.typewriter_animation:
+        safe_input("\nPress Enter to continue...")
 
     user_vector: dict[str, int] = {attr: 0 for attr in quiz.attributes}
 

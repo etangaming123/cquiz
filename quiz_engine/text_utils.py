@@ -12,15 +12,23 @@ MIN_WIDTH = 20
 
 # Typewriter animation speed. Adjust here (not in settings.json) — the
 # settings page only exposes an on/off toggle.
-TYPEWRITER_CHARS_PER_SECOND = 25
+TYPEWRITER_CHARS_PER_SECOND = 50
 
 # Delay between each revealed line (answer choices), in seconds.
-LINE_REVEAL_DELAY_SECONDS = 1.0
+LINE_REVEAL_DELAY_SECONDS = 0.8
 
 
 def terminal_width() -> int:
     """Current terminal width, re-checked on every call so a resized window is picked up."""
     return shutil.get_terminal_size((DEFAULT_WIDTH, 24)).columns
+
+
+def _pause() -> None:
+    try:
+        time.sleep(LINE_REVEAL_DELAY_SECONDS)
+    except KeyboardInterrupt:
+        print()
+        raise ReturnToMenu()
 
 
 def _type_out(line: str) -> None:
@@ -35,6 +43,7 @@ def _type_out(line: str) -> None:
         raise ReturnToMenu()
     sys.stdout.write("\n")
     sys.stdout.flush()
+    _pause()
 
 
 def _reveal_line(line: str) -> None:
@@ -42,11 +51,7 @@ def _reveal_line(line: str) -> None:
     one — unlike _type_out, each line pops in instantly instead of character by
     character."""
     print(line)
-    try:
-        time.sleep(LINE_REVEAL_DELAY_SECONDS)
-    except KeyboardInterrupt:
-        print()
-        raise ReturnToMenu()
+    _pause()
 
 
 def print_wrapped(
