@@ -34,7 +34,9 @@ def ask_question(
     width: int,
     word_wrap: bool,
     typewriter: bool = False,
-) -> Choice:
+) -> Choice | None:
+    """Ask one question. Returns the chosen Choice, or None if the user typed
+    'undo' to go back to the previous question."""
     print()
     header = f"Q{index}/{total}. "
     print_wrapped(
@@ -46,10 +48,12 @@ def ask_question(
             choice.text, width, indent=prefix, subsequent_indent=" " * len(prefix), wrap=word_wrap, line_reveal=typewriter
         )
     while True:
-        raw = safe_input("Your answer: ").strip()
+        raw = safe_input("Your answer (or 'undo' to go back): ").strip()
+        if raw.lower() == "undo":
+            return None
         if raw.isdigit() and 1 <= int(raw) <= len(choices):
             return choices[int(raw) - 1]
-        print(f"Please enter a number between 1 and {len(choices)}.")
+        print(f"Please enter a number between 1 and {len(choices)}, or 'undo'.")
 
 
 def score_quiz(quiz: Quiz, user_vector: dict[str, int]) -> list[tuple[Character, float]]:
@@ -115,14 +119,40 @@ def run_quiz(quiz: Quiz) -> None:
     if settings.shuffle_questions:
         random.shuffle(questions)
 
-    for i, question in enumerate(questions, start=1):
+    # Shuffle each question's choices once up front, so undoing back to a
+    # question shows the same choice order it had the first time.
+    choice_sets: list[list[Choice]] = []
+    for question in questions:
         choices = list(question.choices)
         if settings.shuffle_answers:
             random.shuffle(choices)
+        choice_sets.append(choices)
+
+    answers: list[Choice | None] = [None] * len(questions)
+
+    i = 0
+    while i < len(questions):
+        question = questions[i]
+        choices = choice_sets[i]
 
         chosen = ask_question(
-            i, len(questions), question.text, choices, width, settings.word_wrap, settings.typewriter_animation
+            i + 1, len(questions), question.text, choices, width, settings.word_wrap, settings.typewriter_animation
         )
+
+        if chosen is None:
+            if i == 0:
+                print("Nothing to undo yet.")
+                continue
+            i -= 1
+            prev_choice = answers[i]
+            if prev_choice is not None:
+                for attr, value in prev_choice.points.items():
+                    user_vector[attr] = user_vector.get(attr, 0) - value
+            answers[i] = None
+            print(f"  Undid your answer to Q{i + 1}.")
+            continue
+
+        answers[i] = chosen
         for attr, value in chosen.points.items():
             user_vector[attr] = user_vector.get(attr, 0) + value
 
@@ -138,6 +168,8 @@ def run_quiz(quiz: Quiz) -> None:
             if live_results and live_results[0][1] > 0:
                 leader, leader_pct = live_results[0]
                 print(f"  Currently closest to: {leader.name} ({leader_pct:.1f}%)")
+
+        i += 1
 
     results = score_quiz(quiz, user_vector)
     print_results(results, width, word_wrap=settings.word_wrap, typewriter=settings.typewriter_animation)

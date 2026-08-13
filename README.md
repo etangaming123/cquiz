@@ -25,7 +25,7 @@ python main.py
 
 You'll get a menu:
 
-1. **Take a quiz** — pick one of the quizzes in `quizzes/` by title, answer each question, get your results.
+1. **Take a quiz** — pick one of the quizzes in `quizzes/` by title, answer each question (type `undo` instead of a number to go back and change your previous answer), get your results.
 2. **Create a new quiz** — interactive wizard walks you through building your own quiz and saves it into `quizzes/`.
 3. **Settings** — toggle app behavior (see below).
 4. **Quit** - This one is self explanatory.
